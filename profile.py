@@ -10,18 +10,24 @@ class Profile:
 
 
 class Repository:
-    def save_profile_data(self, profile_data):
-        user = {'name': profile_data.name, 'username': profile_data.username, 'total_games': profile_data.total_games}
-        json_object = json.dumps(user, indent=4)
-        with open("profile.json", "w") as outfile:
+
+    def load_profiles(self):
+        if not exists('profiles.json'):
+            return []
+        file = open('profiles.json')
+        data = json.load(file)
+        profiles = []
+        for profile_data in data:
+            profile = Profile(profile_data['name'], profile_data['username'], profile_data['total_games'])
+            profiles.append(profile)
+        return profiles
+
+    def save_profiles(self, profiles):
+        profiles_data = []
+        for profile in profiles:
+            profile_data = {'name': profile.name, 'username': profile.username, 'total_games': profile.total_games}
+            profiles_data.append(profile_data)
+        json_object = json.dumps(profiles_data, indent=4)
+        with open("profiles.json", "w") as outfile:
             outfile.write(json_object)
 
-    def load_profile_data(self):
-        file = open('profile.json')
-        data = json.load(file)
-        profile = Profile(data['name'], data['username'], data['total_games'])
-        return profile
-
-    def is_profile_exist(self):
-        file_exists = exists('profile.json')
-        return file_exists
